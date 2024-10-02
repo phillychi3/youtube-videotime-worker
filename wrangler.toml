@@ -1,0 +1,4 @@
+name = "youtube_videotime_worker"
+main = "src/worker.py"
+compatibility_flags = ["python_workers"]
+compatibility_date = "2024-10-03"
