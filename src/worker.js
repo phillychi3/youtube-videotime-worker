@@ -2,6 +2,11 @@ import * as utils from "./utils";
 export default {
   async fetch(request) {
     const url = new URL(request.url);
+    const corsHeaders = {
+      "Access-Control-Allow-Origin": "*",
+      "Access-Control-Allow-Methods": "GET",
+      "Access-Control-Allow-Headers": "Content-Type",
+    };
 
     const method = request.method;
     const path = url.pathname.replace(/[/]$/, "");
@@ -42,14 +47,18 @@ export default {
           }
 
           const text = await response.text();
-          const match = text.match(
-            /"lengthSeconds":"(.+?)"/
-          );
+          const match = text.match(/"lengthSeconds":"(.+?)"/);
           if (match) {
             const videotime = match[1];
-            return new Response(JSON.stringify({ length: videotime,text: utils.formatDuration(videotime) }), {
-              headers: { "Content-Type": "application/json" },
-            });
+            return new Response(
+              JSON.stringify({
+                length: videotime,
+                text: utils.formatDuration(videotime),
+              }),
+              {
+                headers: { "Content-Type": "application/json", ...corsHeaders },
+              }
+            );
           } else {
             return new Response(
               JSON.stringify({ error: "Video length not found" }),
@@ -62,7 +71,7 @@ export default {
         } catch (error) {
           return new Response(JSON.stringify({ error: error.message }), {
             status: 500,
-            headers: { "Content-Type": "application/json" },
+            headers: { "Content-Type": "application/json", ...corsHeaders },
           });
         }
       }
